@@ -3,4 +3,8 @@ project(cpp-web-server)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(cpp-web-server src/main.cpp)
+set(HEADERS src/Request.h src/Response.h)
+
+set(SOURCES src/Request.cpp src/Response.cpp)
+
+add_executable(cpp-web-server ${HEADERS} ${SOURCES} src/main.cpp)

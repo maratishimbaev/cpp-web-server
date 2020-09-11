@@ -2,9 +2,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include <cstring>
+#include "Request.h"
+#include "Response.h"
 
-#define PORT 8001
+#define PORT 8002
 #define MAX_BUFFER_SIZE 10000
 
 int main() {
@@ -33,8 +34,6 @@ int main() {
         return 0;
     }
 
-    char *message = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 7\n\nMessage";
-
     std::cout << "Server started\n\n";
 
     while (true) {
@@ -49,8 +48,17 @@ int main() {
         read(socket, buffer, MAX_BUFFER_SIZE);
         std::cout << buffer;
 
-        write(socket, message, strlen(message));
-        std::cout << "Message sent\n\n";
+        Request request(buffer);
+
+        if (request.GetMethod() == "GET") {
+            std::string fileName = "../files/index.html";
+
+            Response response(fileName);
+            std::string message = response.GetMessage();
+
+            write(socket, message.c_str(), message.length());
+            std::cout << "Message sent\n\n";
+        }
 
         close(socket);
     }
