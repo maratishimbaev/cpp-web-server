@@ -7,10 +7,10 @@ class Response {
 public:
     explicit Response(std::string fileName);
     std::string GetMessage();
+    std::string GetContentType();
 
 private:
     std::string fileName;
-    std::string message;
 };
 
 
