@@ -6,7 +6,7 @@
 class Response {
 public:
     explicit Response(std::string fileName);
-    std::string GetMessage();
+    std::string GetMessage(bool withFile);
     std::string GetContentType();
     static std::string DecodeURL(std::string url);
 
