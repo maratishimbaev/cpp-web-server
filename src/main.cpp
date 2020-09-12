@@ -5,7 +5,7 @@
 #include "Request.h"
 #include "Response.h"
 
-#define PORT 8002
+#define PORT 8000
 #define MAX_BUFFER_SIZE 10000
 
 int main() {
@@ -46,18 +46,25 @@ int main() {
 
         char buffer[MAX_BUFFER_SIZE];
         read(socket, buffer, MAX_BUFFER_SIZE);
-        std::cout << buffer;
+        std::cout << "----- Request -----\n" << buffer;
 
         Request request(buffer);
 
         if (request.GetMethod() == "GET") {
-            std::string fileName = "../files/index.html";
+            std::string fileName = "../files";
+
+            std::string path = request.GetPath();
+            if (path == "/") {
+                fileName += "/index.html";
+            } else {
+                fileName += path;
+            }
 
             Response response(fileName);
             std::string message = response.GetMessage();
+            std::cout << "----- Response -----\n" << message << "\n\n";
 
             write(socket, message.c_str(), message.length());
-            std::cout << "Message sent\n\n";
         }
 
         close(socket);
