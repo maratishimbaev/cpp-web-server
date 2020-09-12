@@ -50,13 +50,46 @@ int main() {
 
         Request request(buffer);
 
-        if (request.GetMethod() == "GET") {
-            Response response(request.GetPath());
-            std::string message = response.GetMessage();
-//            std::cout << "----- Response -----\n" << message << "\n\n";
+        std::string message;
+        if (request.GetMethod() == "GET" || request.GetMethod() == "HEAD") {
+            std::string path = request.GetPath();
 
-            write(socket, message.c_str(), message.length());
+            std::cout << "path: " << path << "\n";
+            int pos = path.find('?', 0);
+            if (pos != std::string::npos) {
+                path = path.substr(0, pos);
+                std::cout << "new path: " << path << "\n";
+            }
+
+            // Check if file escape directory root
+            std::string pathCopy = path.substr(1, path.length());
+            int dirCount = 0, escapeCount = 0;
+            while ((pos = pathCopy.find('/', 0)) != std::string::npos) {
+                std::string dir = pathCopy.substr(0, pos);
+
+                if (dir == "..") {
+                    escapeCount++;
+                } else {
+                    dirCount++;
+                }
+
+                pathCopy = pathCopy.substr(pos + 1, pathCopy.length());
+            }
+
+            if (escapeCount > dirCount) {
+                message = "HTTP/1.1 403 Forbidden\nServer: cpp-web-server";
+            } else {
+                Response response(path);
+
+                bool withFile = (request.GetMethod() == "GET");
+                message = response.GetMessage(withFile);
+            }
+        } else {
+            message = "HTTP/1.1 405 Method Not Allowed\nServer: cpp-web-server";
         }
+
+//        std::cout << "----- Response -----\n" << message << "\n\n";
+        write(socket, message.c_str(), message.length());
 
         close(socket);
     }

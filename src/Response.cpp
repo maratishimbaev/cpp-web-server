@@ -15,7 +15,7 @@ Response::Response(std::string fileName) {
     this->path = std::move(fileName);
 }
 
-std::string Response::GetMessage() {
+std::string Response::GetMessage(bool withFile) {
     std::string status = STATUS_OK;
     std::string contentType = GetContentType();
     std::string fileContent;
@@ -26,9 +26,7 @@ std::string Response::GetMessage() {
         isDir = true;
     }
 
-    std::cout << "path: " << path << "\n";
     path = DecodeURL(path);
-    std::cout << "new path: " << path << "\n";
 
     std::ifstream file(DIR_ROOT + path);
     if (file) {
@@ -46,11 +44,13 @@ std::string Response::GetMessage() {
         }
     }
 
-    std::string message = "HTTP/1.1 " + status + "\nServer: cpp-web-server";
+    std::string message = "HTTP/1.1 " + status + "\r\nServer: cpp-web-server";
     if (!fileContent.empty()) {
-        message.append("\nContent-Type: " + contentType +
-            "\nContent-Length: " + std::to_string(fileContent.length() - 1) +
-            "\n\n" + fileContent);
+        message.append("\r\nContent-Type: " + contentType +
+            "\r\nContent-Length: " + std::to_string(fileContent.length() - 1) + "\r\n\r\n");
+        if (withFile) {
+            message.append(fileContent);
+        }
     }
 
     return message;
