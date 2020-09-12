@@ -2,12 +2,17 @@
 #include <fstream>
 #include <utility>
 #include <iostream>
+#include <sstream>
+#include <cstdio>
 
 #define STATUS_OK "200 OK"
 #define STATUS_NOT_FOUND "404 Not Found"
+#define STATUS_FORBIDDEN "403 Forbidden"
+
+#define DIR_ROOT "../files"
 
 Response::Response(std::string fileName) {
-    this->fileName = std::move(fileName);
+    this->path = std::move(fileName);
 }
 
 std::string Response::GetMessage() {
@@ -15,7 +20,17 @@ std::string Response::GetMessage() {
     std::string contentType = GetContentType();
     std::string fileContent;
 
-    std::ifstream file(fileName);
+    bool isDir = false;
+    if (this->path.ends_with("/")) {
+        path += "index.html";
+        isDir = true;
+    }
+
+    std::cout << "path: " << path << "\n";
+    path = DecodeURL(path);
+    std::cout << "new path: " << path << "\n";
+
+    std::ifstream file(DIR_ROOT + path);
     if (file) {
         file.seekg(0, std::ios::end);
         size_t len = file.tellg();
@@ -24,19 +39,25 @@ std::string Response::GetMessage() {
         fileContent = std::string(len + 1, '\0');
         file.read(&fileContent[0], len);
     } else {
-        status = STATUS_NOT_FOUND;
+        if (!isDir) {
+            status = STATUS_NOT_FOUND;
+        } else {
+            status = STATUS_FORBIDDEN;
+        }
     }
 
-    std::string message = "HTTP/1.1 " + status;
+    std::string message = "HTTP/1.1 " + status + "\nServer: cpp-web-server";
     if (!fileContent.empty()) {
-        message.append("\nContent-Type: " + contentType + "\nContent-Length: " + std::to_string(fileContent.length()) + "\n\n" + fileContent);
+        message.append("\nContent-Type: " + contentType +
+            "\nContent-Length: " + std::to_string(fileContent.length() - 1) +
+            "\n\n" + fileContent);
     }
 
     return message;
 }
 
 std::string Response::GetContentType() {
-    std::string name = this->fileName;
+    std::string name = this->path;
 
     if (name.ends_with(".html")) { return "text/html"; }
     if (name.ends_with(".css")) { return "text/css"; }
@@ -47,4 +68,23 @@ std::string Response::GetContentType() {
     if (name.ends_with(".swf")) { return "application/x-shockwave-flash"; }
 
     return "text/plain";
+}
+
+std::string Response::DecodeURL(std::string url) {
+    std::string result;
+
+    for (int i = 0; i < url.length(); i++) {
+        if (url[i] == '%') {
+            int ch;
+            sscanf(url.substr(i + 1, 2).c_str(), "%x", &ch);
+            result += static_cast<char>(ch);
+            i += 2;
+        } else if (url[i] == '+') {
+            result += ' ';
+        } else {
+            result += url[i];
+        }
+    }
+
+    return result;
 }
