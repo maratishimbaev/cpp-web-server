@@ -36,3 +36,6 @@
 
 # Build files
 cmake-build-debug/
+
+# Test files
+files/httptest/
