@@ -6,7 +6,7 @@
 
 class Request {
 public:
-    explicit Request(char *requestString);
+    explicit Request(std::string requestString);
     std::string GetMethod();
     std::string GetPath();
 
