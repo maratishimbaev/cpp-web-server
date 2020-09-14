@@ -2,7 +2,6 @@
 #include <fstream>
 #include <utility>
 #include <iostream>
-#include <sstream>
 #include <cstdio>
 
 #define STATUS_OK "200 OK"
@@ -21,13 +20,17 @@ std::string Response::GetMessage(bool withFile) {
     std::string fileContent;
 
     bool isDir = false;
-    if (this->path.ends_with("/")) {
+    if (this->path.find('.', 0) == std::string::npos) {
+        if (!path.ends_with("/")) {
+            path += "/";
+        }
         path += "index.html";
         isDir = true;
     }
 
     path = DecodeURL(path);
 
+    std::cout << "path: " << DIR_ROOT + path << "\n";
     std::ifstream file(DIR_ROOT + path);
     if (file) {
         file.seekg(0, std::ios::end);
@@ -67,7 +70,7 @@ std::string Response::GetContentType() {
     if (name.ends_with(".gif")) { return "image/gif"; }
     if (name.ends_with(".swf")) { return "application/x-shockwave-flash"; }
 
-    return "text/plain";
+    return "text/html";
 }
 
 std::string Response::DecodeURL(std::string url) {

@@ -1,7 +1,9 @@
 #include "Request.h"
 
-Request::Request(char *requestString) {
-    std::string request(requestString);
+#include <utility>
+
+Request::Request(std::string requestString) {
+    std::string request(std::move(requestString));
 
     int pos;
 
