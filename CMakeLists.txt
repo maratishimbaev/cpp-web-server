@@ -3,9 +3,13 @@ project(cpp-web-server)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(HEADERS src/Request.h src/Response.h src/ThreadPool.h)
+set(HEADERS
+    src/Handler.h
+    src/ThreadPool.h)
 
-set(SOURCES src/Request.cpp src/Response.cpp src/ThreadPool.cpp)
+set(SOURCES
+    src/Handler.cpp
+    src/ThreadPool.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 

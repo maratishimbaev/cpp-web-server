@@ -21,8 +21,7 @@ private:
     std::condition_variable_any queueConditionalVariable;
     bool done;
     void DoWork();
-    static void HandleRequest(int socket, std::string requestString);
+    static void HandleRequest(int socket, const std::string& requestString);
 };
-
 
 #endif //CPP_WEB_SERVER_THREADPOOL_H
