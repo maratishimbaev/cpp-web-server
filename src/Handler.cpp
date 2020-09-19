@@ -43,7 +43,6 @@ void Handler::Handle(int socket, std::string requestString) {
     }
 
     std::string message = "HTTP/1.1 " + status + MakeHeadersString(headers) + body;
-    std::cout << "----- Response -----\n" << message << "\n\n";
     write(socket, message.c_str(), message.length());
     close(socket);
 }

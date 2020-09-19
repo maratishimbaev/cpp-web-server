@@ -33,7 +33,7 @@ int main() {
         return 0;
     }
 
-    ThreadPool threadPool;
+    auto threadPool = ThreadPool();
 
     std::cout << "Server started\n\n";
 
@@ -47,7 +47,6 @@ int main() {
 
         char buffer[MAX_BUFFER_SIZE];
         read(socket, buffer, MAX_BUFFER_SIZE);
-        std::cout << "----- Request -----\n" << buffer;
 
         threadPool.AddToQueue(socket, std::string(buffer));
     }
