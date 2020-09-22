@@ -6,10 +6,6 @@
 #include "ThreadPool.h"
 #include "config.h"
 
-void run() {
-
-}
-
 int main(int argc, char* argv[]) {
     unsigned int port = 8000;
 
