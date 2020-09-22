@@ -5,7 +5,6 @@
 #include "ThreadPool.h"
 
 #define PORT 8000
-#define MAX_BUFFER_SIZE 10000
 
 int main() {
     int server;
@@ -45,8 +44,9 @@ int main() {
             return 0;
         }
 
-        char buffer[MAX_BUFFER_SIZE];
-        read(socket, buffer, MAX_BUFFER_SIZE);
+        int bufferSize = 10000;
+        char buffer[bufferSize];
+        read(socket, buffer, bufferSize);
 
         threadPool.AddToQueue(socket, std::string(buffer));
     }
