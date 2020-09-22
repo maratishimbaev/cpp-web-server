@@ -12,7 +12,7 @@ void Handler::Handle(int socket, std::string requestString) {
     std::vector<Header> headers = {
             Header{"Server", "cpp-web-server"},
             Header{"Date", GetNowDate()},
-            Header{"Keep-Alive", "close"}
+            Header{"Connection", "close"}
     };
     std::string body;
 
