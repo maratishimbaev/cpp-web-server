@@ -4,6 +4,7 @@ project(cpp-web-server)
 set(CMAKE_CXX_STANDARD 20)
 
 set(HEADERS
+    src/config.h
     src/Handler.h
     src/ThreadPool.h)
 

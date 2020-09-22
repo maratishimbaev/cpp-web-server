@@ -5,8 +5,6 @@
 #include <vector>
 #include <map>
 
-#define DIR_ROOT "../files"
-
 struct Request {
     std::string method;
     std::string path;
@@ -19,6 +17,7 @@ struct Header {
 
 class Handler {
 public:
+    explicit Handler(std::string documentRoot);
     void Handle(int socket, std::string requestString);
 
 private:
@@ -26,10 +25,11 @@ private:
     static std::string DecodePath(std::string path);
     static std::string GetContentType(const std::string& path);
     static std::string MakeHeadersString(const std::vector<Header>& headers);
-    static std::pair<std::string, int> MakeBody(std::string path);
-    static std::pair<int, int> GetFileSize(std::string path);
+    std::pair<std::string, int> MakeBody(std::string path);
+    std::pair<int, int> GetFileSize(std::string path);
     static bool CheckPathEscape(std::string path);
     static std::string GetNowDate();
+    std::string documentRoot;
     std::map<int, std::string> statuses = {
             {200, "200 OK"},
             {404, "404 Not Found"},

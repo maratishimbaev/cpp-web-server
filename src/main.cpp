@@ -1,13 +1,17 @@
 #include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <unistd.h>
 #include <cstring>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include "ThreadPool.h"
+#include "config.h"
+
+void run() {
+
+}
 
 int main(int argc, char* argv[]) {
     unsigned int port = 8000;
-    unsigned int threadLimit = std::thread::hardware_concurrency();
 
     for (int i = 1; i < argc; i++) {
         if (i + 1 != argc) {
@@ -16,26 +20,20 @@ int main(int argc, char* argv[]) {
                     port = std::stoi(std::string(argv[i + 1]));
                 }
                 catch (...) {
-                    std::cout << "Wrong -p argument\n";
+                    std::cerr << "Wrong -p argument\n";
                 }
                 i++;
                 continue;
             }
-            if (strcmp(argv[i], "-t") == 0) {
-                try {
-                    threadLimit = std::stoi(std::string(argv[i + 1]));
-                }
-                catch (...) {
-                    std::cout << "Wrong -t argument\n";
-                }
-            }
         }
     }
+
+    Config config = ParseConfig();
 
     int server;
 
     if ((server = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        std::cerr << "Socket is not created";
+        std::cerr << "Socket is not created\n";
         return 0;
     }
 
@@ -48,16 +46,16 @@ int main(int argc, char* argv[]) {
     int addressLength = sizeof(address);
 
     if (bind(server, (struct sockaddr *)&address, addressLength) < 0) {
-        std::cerr << "Socket is not bind";
+        std::cerr << "Socket is not bind\n";
         return 0;
     }
 
     if (listen(server, 10) < 0) {
-        std::cerr << "Listen error";
+        std::cerr << "Listen error\n";
         return 0;
     }
 
-    auto threadPool = ThreadPool(threadLimit);
+    ThreadPool threadPool(config.threadLimit, config.documentRoot);
 
     std::cout << "Server started\n\n";
 
@@ -65,7 +63,7 @@ int main(int argc, char* argv[]) {
         int socket;
 
         if ((socket = accept(server, (struct sockaddr *)&address, (socklen_t *)&addressLength)) < 0) {
-            std::cerr << "Accept error";
+            std::cerr << "Accept error\n";
             return 0;
         }
 

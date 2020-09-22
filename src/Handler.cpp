@@ -4,6 +4,9 @@
 #include <unistd.h>
 #include <iostream>
 #include <ctime>
+#include <string>
+
+Handler::Handler(std::string documentRoot) : documentRoot(std::move(documentRoot)) {}
 
 void Handler::Handle(int socket, std::string requestString) {
     Request request = ParseRequest(std::move(requestString));
@@ -124,7 +127,7 @@ std::pair<std::string, int> Handler::MakeBody(std::string path) {
         return std::make_pair(body, 403);
     }
 
-    std::ifstream file(DIR_ROOT + path);
+    std::ifstream file(documentRoot + path);
     if (file) {
         file.seekg(0, std::ios::end);
         size_t len = file.tellg();
@@ -160,7 +163,7 @@ std::pair<int, int> Handler::GetFileSize(std::string path) {
         return std::make_pair(size, 403);
     }
     
-    std::ifstream file(DIR_ROOT + path, std::ifstream::ate | std::ifstream::binary);
+    std::ifstream file(documentRoot + path, std::ifstream::ate | std::ifstream::binary);
     if (file) {
         size = file.tellg();
     } else {

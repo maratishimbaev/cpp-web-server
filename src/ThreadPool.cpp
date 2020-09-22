@@ -2,7 +2,7 @@
 #include "Handler.h"
 #include <utility>
 
-ThreadPool::ThreadPool(unsigned int threadLimit) : done(false) {
+ThreadPool::ThreadPool(unsigned int threadLimit, std::string documentRoot) : done(false), documentRoot(std::move(documentRoot)) {
     threadNumber = threadLimit;
     if (threadNumber == 0) {
         threadNumber = 1;
@@ -49,6 +49,6 @@ void ThreadPool::DoWork() {
 }
 
 void ThreadPool::HandleRequest(int socket, const std::string &requestString) {
-    Handler handler;
+    Handler handler(documentRoot);
     handler.Handle(socket, requestString);
 }
