@@ -9,7 +9,7 @@
 
 class ThreadPool {
 public:
-    ThreadPool();
+    ThreadPool(unsigned int threadLimit);
     ~ThreadPool();
     void AddToQueue(int socket, const std::string& requestString);
 

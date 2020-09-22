@@ -2,8 +2,8 @@
 #include "Handler.h"
 #include <utility>
 
-ThreadPool::ThreadPool() : done(false) {
-    threadNumber = std::thread::hardware_concurrency();
+ThreadPool::ThreadPool(unsigned int threadLimit) : done(false) {
+    threadNumber = threadLimit;
     if (threadNumber == 0) {
         threadNumber = 1;
     }

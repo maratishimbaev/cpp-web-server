@@ -2,11 +2,36 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <cstring>
 #include "ThreadPool.h"
 
-#define PORT 8000
+int main(int argc, char* argv[]) {
+    unsigned int port = 8000;
+    unsigned int threadLimit = std::thread::hardware_concurrency();
 
-int main() {
+    for (int i = 1; i < argc; i++) {
+        if (i + 1 != argc) {
+            if (strcmp(argv[i], "-p") == 0) {
+                try {
+                    port = std::stoi(std::string(argv[i + 1]));
+                }
+                catch (...) {
+                    std::cout << "Wrong -p argument\n";
+                }
+                i++;
+                continue;
+            }
+            if (strcmp(argv[i], "-t") == 0) {
+                try {
+                    threadLimit = std::stoi(std::string(argv[i + 1]));
+                }
+                catch (...) {
+                    std::cout << "Wrong -t argument\n";
+                }
+            }
+        }
+    }
+
     int server;
 
     if ((server = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -18,11 +43,11 @@ int main() {
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
+    address.sin_port = htons(port);
 
-    int addrlen = sizeof(address);
+    int addressLength = sizeof(address);
 
-    if (bind(server, (struct sockaddr *)&address, addrlen) < 0) {
+    if (bind(server, (struct sockaddr *)&address, addressLength) < 0) {
         std::cerr << "Socket is not bind";
         return 0;
     }
@@ -32,14 +57,14 @@ int main() {
         return 0;
     }
 
-    auto threadPool = ThreadPool();
+    auto threadPool = ThreadPool(threadLimit);
 
     std::cout << "Server started\n\n";
 
     while (true) {
         int socket;
 
-        if ((socket = accept(server, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
+        if ((socket = accept(server, (struct sockaddr *)&address, (socklen_t *)&addressLength)) < 0) {
             std::cerr << "Accept error";
             return 0;
         }
