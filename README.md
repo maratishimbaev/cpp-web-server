@@ -14,11 +14,15 @@ cmake --build ./cmake-build --target cpp-web-server -- -j 6
 
 Run server:
 ```
-cd ./cmake-build/cpp-web-server -p 8000
+./cmake-build/cpp-web-server -p 8000
 ```
 
 Run functional tests:
 ```
+git clone https://github.com/init/http-test-suite.git
+cp -r http-test-suite/httptest ./files
+cp -r http-test-suite/httptest.py .
+
 python2 httptest.py
 ```
 
