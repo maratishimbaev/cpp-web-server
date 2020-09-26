@@ -36,7 +36,3 @@
 
 # Build files
 cmake-build-debug/
-
-# Test files
-httptest.py
-files/httptest/
